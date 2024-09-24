@@ -12,7 +12,7 @@ class Process{
     int burst_time;
     int waiting_time;
     int turn_around_time;
-    int complition_time;
+    int completion_time;
 
     Process(){
         //default
@@ -79,7 +79,7 @@ void calculate_srtf_times(vector<Process> &process_list){
         else{
             completed++;
             time += rt;
-            process_list[index].complition_time = time;
+            process_list[index].completion_time = time;
             process_list[index].turn_around_time = time - process_list[index].arrival_time;
             process_list[index].waiting_time = process_list[index].turn_around_time - process_list[index].burst_time;
         }
@@ -99,12 +99,12 @@ void print_srtf_table(vector<Process> &tasks_list){
     int n = tasks_list.size();
     cout<<endl<<"Process_id"<<"  "<<"Arrival_time"<<"  "<<"Burst_time"<<"  "
         <<"Waiting_time"<<"  "<<"Turn_around_time"<<"  "
-        <<"Complition_time"<<endl;
+        <<"Completion_time"<<endl;
 
     for(int i=0; i<n; i++){
         cout<<tasks_list[i].process_id<<setw(13)<<tasks_list[i].arrival_time<<setw(14)
             <<tasks_list[i].burst_time<<setw(12)<<tasks_list[i].waiting_time<<setw(14)
-            <<tasks_list[i].turn_around_time<<setw(19)<<tasks_list[i].complition_time<<endl;
+            <<tasks_list[i].turn_around_time<<setw(19)<<tasks_list[i].completion_time<<endl;
     }
     cout<<endl;
 };

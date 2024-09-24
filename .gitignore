@@ -1,4 +1,6 @@
-FCFS
 FCFS_priority_queue
+FCFS
 SJF
 SRTF
+HRRN
+HRRN.cpp

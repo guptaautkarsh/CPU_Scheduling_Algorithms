@@ -11,7 +11,7 @@ class Process{
     int burst_time;
     int waiting_time;
     int turn_around_time;
-    int complition_time;
+    int completion_time;
 
     Process(){
         //default
@@ -44,18 +44,18 @@ class FCFS_Scheduling{
         if(n>0){
             tasks_list[0].waiting_time = 0;
             tasks_list[0].turn_around_time = tasks_list[0].burst_time;
-            tasks_list[0].complition_time = tasks_list[0].arrival_time + tasks_list[0].burst_time;
+            tasks_list[0].completion_time = tasks_list[0].arrival_time + tasks_list[0].burst_time;
 
             avg_turn_around_time = tasks_list[0].turn_around_time;
         }
 
         for (int i=1; i<n; i++){
-            tasks_list[i].waiting_time = tasks_list[i-1].complition_time - tasks_list[i].arrival_time;
+            tasks_list[i].waiting_time = tasks_list[i-1].completion_time - tasks_list[i].arrival_time;
             if(tasks_list[i].waiting_time < 0)
                 tasks_list[i].waiting_time = 0;
             
             tasks_list[i].turn_around_time = tasks_list[i].waiting_time + tasks_list[i].burst_time;
-            tasks_list[i].complition_time = tasks_list[i].arrival_time + tasks_list[i].turn_around_time;
+            tasks_list[i].completion_time = tasks_list[i].arrival_time + tasks_list[i].turn_around_time;
 
             avg_waiting_time += tasks_list[i].waiting_time;
             avg_turn_around_time += tasks_list[i].turn_around_time;
@@ -63,7 +63,7 @@ class FCFS_Scheduling{
 
         avg_turn_around_time /= n;
         avg_waiting_time /= n;
-        scheduling_length = tasks_list[n-1].complition_time - tasks_list[0].arrival_time;
+        scheduling_length = tasks_list[n-1].completion_time - tasks_list[0].arrival_time;
         throughput = n/scheduling_length;
     }
 
@@ -71,12 +71,12 @@ class FCFS_Scheduling{
         int n = tasks_list.size();
         cout<<endl<<"Process_id"<<"  "<<"Arrival_time"<<"  "<<"Burst_time"<<"  "
             <<"Waiting_time"<<"  "<<"Turn_around_time"<<"  "
-            <<"Complition_time"<<endl;
+            <<"Completion_time"<<endl;
 
         for(int i=0; i<n; i++){
             cout<<tasks_list[i].process_id<<setw(13)<<tasks_list[i].arrival_time<<setw(14)
                 <<tasks_list[i].burst_time<<setw(12)<<tasks_list[i].waiting_time<<setw(14)
-                <<tasks_list[i].turn_around_time<<setw(19)<<tasks_list[i].complition_time<<endl;
+                <<tasks_list[i].turn_around_time<<setw(19)<<tasks_list[i].completion_time<<endl;
         }
     }
 
@@ -86,16 +86,13 @@ class FCFS_Scheduling{
 
         cout<<time<<" |";
         for(int i=0; i<n; i++){
-            if(tasks_list[i].arrival_time <= time){
-                cout<<tasks_list[i].process_id<<"| "<<tasks_list[i].complition_time<<" |";
-                time = tasks_list[i].complition_time;
-            }
-            else{
-                cout<<"--| "<<tasks_list[i].arrival_time<<" |";
+            if(tasks_list[i].arrival_time > time){
+                cout<<"--} "<<tasks_list[i].arrival_time<<" {";
                 time = tasks_list[i].arrival_time;
-                cout<<tasks_list[i].process_id<<"| "<<tasks_list[i].complition_time<<" |";
-                time = tasks_list[i].complition_time;
             }
+
+            cout<<tasks_list[i].process_id<<"} "<<tasks_list[i].completion_time<<" {";
+            time = tasks_list[i].completion_time;
         }
         cout<<endl;
     }
