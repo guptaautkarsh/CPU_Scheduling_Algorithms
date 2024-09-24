@@ -52,41 +52,34 @@ class SJF_Scheduling{
 
         int time = process_list[0].arrival_time;
         int j = 0;
-        for(int i=0; i<n; i++){
+        int i = 0;
+        while(i != n){
             while(j<n && process_list[j].arrival_time <= time){
                 minHeap.push(process_list[j]);
                 j++;
             }
 
             if(minHeap.empty()){
-                tasks_list.push_back(process_list[j]);
-                j++;
+                time = process_list[j].arrival_time;
+                continue;
             }
             else{
                 tasks_list.push_back(minHeap.top());
                 minHeap.pop();  
             }
 
-            if(i==0){
-                tasks_list[0].waiting_time = 0;
-                tasks_list[0].turn_around_time = tasks_list[0].burst_time;
-                tasks_list[0].completion_time = tasks_list[0].arrival_time + tasks_list[0].turn_around_time;
+            tasks_list[i].waiting_time = time - tasks_list[i].arrival_time;
+            if(tasks_list[i].waiting_time < 0)
+                tasks_list[i].waiting_time = 0;
+            
+            tasks_list[i].turn_around_time = tasks_list[i].waiting_time + tasks_list[i].burst_time;
+            tasks_list[i].completion_time = tasks_list[i].arrival_time + tasks_list[i].turn_around_time;
 
-                avg_turn_around_time = tasks_list[0].turn_around_time;
-            }
-            else{
-                tasks_list[i].waiting_time = tasks_list[i-1].completion_time - tasks_list[i].arrival_time;
-                if(tasks_list[i].waiting_time < 0)
-                    tasks_list[i].waiting_time = 0;
-                
-                tasks_list[i].turn_around_time = tasks_list[i].waiting_time + tasks_list[i].burst_time;
-                tasks_list[i].completion_time = tasks_list[i].arrival_time + tasks_list[i].turn_around_time;
-
-                avg_waiting_time += tasks_list[i].waiting_time;
-                avg_turn_around_time += tasks_list[i].turn_around_time;
-            }
+            avg_waiting_time += tasks_list[i].waiting_time;
+            avg_turn_around_time += tasks_list[i].turn_around_time;
 
             time = tasks_list[i].completion_time;
+            i++;
         }
 
         avg_turn_around_time /= n;
