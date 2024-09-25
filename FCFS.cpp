@@ -4,6 +4,9 @@
 #include <iomanip>
 using namespace std;
 
+/*If arrival time of two or more processes  are same then that will execute which came first
+  i.e which you input first*/
+
 class Process{
     public:
     string process_id;
@@ -40,17 +43,10 @@ class FCFS_Scheduling{
         int n = t.size();
         this->tasks_list = t;
         sort(tasks_list.begin(), tasks_list.end(), comparator);
+        int time = tasks_list[0].arrival_time;
 
-        if(n>0){
-            tasks_list[0].waiting_time = 0;
-            tasks_list[0].turn_around_time = tasks_list[0].burst_time;
-            tasks_list[0].completion_time = tasks_list[0].arrival_time + tasks_list[0].burst_time;
-
-            avg_turn_around_time = tasks_list[0].turn_around_time;
-        }
-
-        for (int i=1; i<n; i++){
-            tasks_list[i].waiting_time = tasks_list[i-1].completion_time - tasks_list[i].arrival_time;
+        for (int i=0; i<n; i++){
+            tasks_list[i].waiting_time = time - tasks_list[i].arrival_time;
             if(tasks_list[i].waiting_time < 0)
                 tasks_list[i].waiting_time = 0;
             
@@ -59,6 +55,8 @@ class FCFS_Scheduling{
 
             avg_waiting_time += tasks_list[i].waiting_time;
             avg_turn_around_time += tasks_list[i].turn_around_time;
+
+            time = tasks_list[i].completion_time;
         }
 
         avg_turn_around_time /= n;
@@ -84,7 +82,7 @@ class FCFS_Scheduling{
         int n = tasks_list.size();
         int time = 0;
 
-        cout<<time<<" |";
+        cout<<time<<" {";
         for(int i=0; i<n; i++){
             if(tasks_list[i].arrival_time > time){
                 cout<<"--} "<<tasks_list[i].arrival_time<<" {";
@@ -129,10 +127,10 @@ int main(){
     FCFS_Scheduling fcfs1(t);
     fcfs1.print_table();
 
-    // cout<<"Average waiting time = "<<fcfs1.avg_waiting_time<<endl;
-    // cout<<"Average turn around time = "<<fcfs1.avg_turn_around_time<<endl;
-    // cout<<"Scheduling Length = "<<fcfs1.scheduling_length<<endl;
-    // cout<<"Throughput = "<<fcfs1.throughput<<endl;
+    cout<<"Average waiting time = "<<fcfs1.avg_waiting_time<<endl;
+    cout<<"Average turn around time = "<<fcfs1.avg_turn_around_time<<endl;
+    cout<<"Scheduling Length = "<<fcfs1.scheduling_length<<endl;
+    cout<<"Throughput = "<<fcfs1.throughput<<endl;
 
     fcfs1.gantt_chart();
 
