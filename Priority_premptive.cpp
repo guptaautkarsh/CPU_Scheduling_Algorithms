@@ -120,6 +120,27 @@ void print_priority_table(vector<Process> &tasks_list){
     cout<<endl;
 };
 
+void print_utils(vector<Process> &process_list){
+    int n = process_list.size();
+    float avg_waiting_time = 0;
+    float avg_turn_around_time = 0;
+    float scheduling_length;
+    float throughput;
+
+    for(int i = 0; i<n; i++){
+        avg_waiting_time += process_list[i].waiting_time;
+        avg_turn_around_time += process_list[i].turn_around_time;
+    }
+
+    scheduling_length = process_list[n-1].completion_time - process_list[0].arrival_time;
+    throughput = n/scheduling_length;
+
+    cout<<endl<<"Average waiting time = "<<avg_waiting_time<<endl;
+    cout<<"Average turn around time = "<<avg_turn_around_time<<endl;
+    cout<<"Scheduling Length = "<<scheduling_length<<endl;
+    cout<<"Throughput = "<<throughput<<endl;
+}
+
 int main(){
     
     int n;
@@ -153,6 +174,7 @@ int main(){
 
     priority_with_gantt_chart(process_list);
     print_priority_table(process_list);
+    print_utils(process_list);
 
     return 0;
 }
