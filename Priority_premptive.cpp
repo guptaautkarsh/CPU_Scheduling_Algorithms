@@ -132,10 +132,12 @@ void print_utils(vector<Process> &process_list){
         avg_turn_around_time += process_list[i].turn_around_time;
     }
 
+    avg_waiting_time /= n;
+    avg_turn_around_time /= n;
     scheduling_length = process_list[n-1].completion_time - process_list[0].arrival_time;
     throughput = n/scheduling_length;
 
-    cout<<endl<<"Average waiting time = "<<avg_waiting_time<<endl;
+    cout<<"Average waiting time = "<<avg_waiting_time<<endl;
     cout<<"Average turn around time = "<<avg_turn_around_time<<endl;
     cout<<"Scheduling Length = "<<scheduling_length<<endl;
     cout<<"Throughput = "<<throughput<<endl;
