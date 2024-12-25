@@ -67,13 +67,13 @@ class Fcfs{
                 start_time = arrival_time;
 
             waiting_time = completion_time - arrival_time;
+            
             if(waiting_time<0)
                 waiting_time = 0;
-            avg_waiting_time += waiting_time;
 
+            avg_waiting_time += waiting_time;
             turn_around_time = waiting_time + burst_time;
             avg_turn_around_time += turn_around_time;
-
             completion_time = arrival_time + turn_around_time;
 
             cout<<process_id<<setw(14)<<arrival_time<<setw(14)<<burst_time<<setw(12)
