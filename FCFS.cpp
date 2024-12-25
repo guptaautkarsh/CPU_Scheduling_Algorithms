@@ -103,7 +103,7 @@ int main(){
     cout<<"Enter number of processes : ";
     cin>>n;
 
-    vector<Process> t;
+    vector<Process> t(n);
 
     for(int i=1; i<=n; i++){
         cout<<"PROCESS "<<i<<endl;
@@ -120,8 +120,7 @@ int main(){
         cout<<"Enter burst time : ";
         cin>>bt;
 
-        Process p(pid, at, bt);
-        t.push_back(p);
+        t[i-1] = Process(pid, at, bt);
     }
 
     FCFS_Scheduling fcfs1(t);
