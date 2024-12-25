@@ -126,7 +126,7 @@ int main(){
     cout<<"Enter number of processes : ";
     cin>>n;
 
-    vector<Process> process_list;
+    vector<Process> process_list(n);
 
     for(int i=1; i<=n; i++){
         cout<<"PROCESS "<<i<<endl;
@@ -143,8 +143,7 @@ int main(){
         cout<<"Enter burst time : ";
         cin>>bt;
 
-        Process p(pid, at, bt);
-        process_list.push_back(p);
+        process_list[i-1] = Process(pid, at, bt);
     }
 
     SJF_Scheduling sjf1(process_list);
