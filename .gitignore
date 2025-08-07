@@ -3,6 +3,6 @@ FCFS
 SJF
 SRTF
 HRRN
-Priority
+Priority_non_premptive
 Priority_premptive
 Round_robin
