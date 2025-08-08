@@ -90,6 +90,16 @@ class FCFS_Scheduling{
                 <<tasks_list[i].burst_time<<setw(12)<<tasks_list[i].waiting_time<<setw(14)
                 <<tasks_list[i].turn_around_time<<setw(19)<<tasks_list[i].completion_time<<endl;
         }
+
+        cout<<endl;
+    }
+
+    void print_utils(){
+        cout<<"Average waiting time = "<<avg_waiting_time<<endl;
+        cout<<"Average turn around time = "<<avg_turn_around_time<<endl;
+        cout<<"Scheduling Length = "<<scheduling_length<<endl;
+        cout<<"Throughput = "<<throughput<<endl;
+        cout<<endl;
     }
 
     void gantt_chart(){
@@ -107,6 +117,8 @@ class FCFS_Scheduling{
         }
 
         print_chart(chart);
+
+        cout<<endl;
     }
 
     void print_chart(vector<Gantt> &chart){
@@ -188,10 +200,7 @@ int main(){
     FCFS_Scheduling fcfs1(t);
     fcfs1.print_table();
 
-    cout<<"Average waiting time = "<<fcfs1.avg_waiting_time<<endl;
-    cout<<"Average turn around time = "<<fcfs1.avg_turn_around_time<<endl;
-    cout<<"Scheduling Length = "<<fcfs1.scheduling_length<<endl;
-    cout<<"Throughput = "<<fcfs1.throughput<<endl;
+    fcfs1.print_utils();
 
     fcfs1.gantt_chart();
 
