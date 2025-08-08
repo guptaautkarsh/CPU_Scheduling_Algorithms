@@ -17,13 +17,26 @@ class Process{
     int completion_time;
 
     Process(){
-        //default
+        process_id = "NA";
     }
     
     Process(string id, int at, int bt){
         this->process_id = id;
         this->arrival_time = at;
         this->burst_time = bt;
+    }
+};
+
+class Gantt{
+    public:
+    int start;
+    Process p;
+    int end;
+
+    Gantt(int s, Process p, int e){
+        start = s;
+        this->p = p;
+        end = e;
     }
 };
 
@@ -34,6 +47,7 @@ bool comparator(Process &p1, Process &p2){
 class FCFS_Scheduling{
     public:
     vector<Process> tasks_list;
+    vector<Gantt> chart;
     float avg_waiting_time = 0;
     float avg_turn_around_time = 0;
     float scheduling_length = 0;
@@ -82,20 +96,68 @@ class FCFS_Scheduling{
         int n = tasks_list.size();
         int time = 0;
 
-        cout<<time<<" {";
         for(int i=0; i<n; i++){
             if(tasks_list[i].arrival_time > time){
-                cout<<"--} "<<tasks_list[i].arrival_time<<" {";
+                chart.push_back(Gantt(time,Process(),tasks_list[i].arrival_time));
                 time = tasks_list[i].arrival_time;
             }
 
-            cout<<tasks_list[i].process_id<<"} "<<tasks_list[i].completion_time<<" {";
+            chart.push_back(Gantt(time,tasks_list[i],tasks_list[i].completion_time));
             time = tasks_list[i].completion_time;
         }
+
+        print_chart(chart);
+    }
+
+    void print_chart(vector<Gantt> &chart){
+        int n = chart.size();
+
+        cout<<' ';
+        for(int i=0; i<n; i++){
+            int t = chart[i].end - chart[i].start;
+            fill('-',4*t);
+            cout<<' ';
+        };
+
+        cout<<endl;
+
+        cout<<'|';
+        for(int i=0; i<n; i++){
+            int t = chart[i].end - chart[i].start;
+            fill(' ',(4*t-2)/2);
+            
+            cout<<chart[i].p.process_id;
+            
+            fill(' ',(4*t-2)/2);
+
+            cout<<'|';
+        }
+
+        cout<<endl;
+
+        cout<<0;
+        for(int i=0; i<n; i++){
+            int t = chart[i].end - chart[i].start;
+
+            if(chart[i].start>99)
+                fill('-',4*t-2);
+            else if(chart[i].start>9)
+                fill('-',4*t-1);
+            else
+                fill('-',4*t);
+
+            cout<<chart[i].end;
+        };
+
         cout<<endl;
     }
-};
 
+    void fill(char c, int freq){
+        for(int i=0; i<freq; i++){
+            cout<<c;
+        }
+    }
+};
 
 int main(){
     
