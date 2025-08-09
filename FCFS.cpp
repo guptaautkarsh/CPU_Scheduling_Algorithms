@@ -12,10 +12,6 @@ class Process{
     int waiting_time;
     int turn_around_time;
     int completion_time;
-
-    Process(){
-        process_id = "NA";
-    }
     
     Process(string id, int at, int bt){
         this->process_id = id;
@@ -27,12 +23,12 @@ class Process{
 class Gantt{
     public:
     int start;
-    Process p;
+    string pid;
     int end;
 
-    Gantt(int s, Process p, int e){
+    Gantt(int s, string p, int e){
         start = s;
-        this->p = p;
+        pid = p;
         end = e;
     }
 };
@@ -133,11 +129,11 @@ class FCFS_Scheduling{
 
         for(int i=0; i<n; i++){
             if(tasks_list[i].arrival_time > time){
-                chart.push_back(Gantt(time,Process(),tasks_list[i].arrival_time));
+                chart.push_back(Gantt(time,"NA",tasks_list[i].arrival_time));
                 time = tasks_list[i].arrival_time;
             }
 
-            chart.push_back(Gantt(time,tasks_list[i],tasks_list[i].completion_time));
+            chart.push_back(Gantt(time,tasks_list[i].process_id,tasks_list[i].completion_time));
             time = tasks_list[i].completion_time;
         }
 
@@ -163,7 +159,7 @@ class FCFS_Scheduling{
             int t = chart[i].end - chart[i].start;
             fill(' ',(4*t-2)/2);
             
-            cout<<chart[i].p.process_id;
+            cout<<chart[i].pid;
             
             fill(' ',(4*t-2)/2);
 
