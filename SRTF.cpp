@@ -13,10 +13,6 @@ class Process{
     int waiting_time;
     int turn_around_time;
     int completion_time;
-
-    Process(){
-        //default
-    }
     
     Process(string id, int at, int bt){
         this->process_id = id;
@@ -26,8 +22,17 @@ class Process{
     }
 };
 
-bool Sort_comparator(Process &p1, Process &p2){
-    return p1.arrival_time < p2.arrival_time;
+class Gantt{
+    public:
+    int start;
+    string pid;
+    int end;
+
+    Gantt(int s, string p, int e){
+        start = s;
+        pid = p;
+        end = e;
+    }
 };
 
 class Heap_comparator{
@@ -37,100 +42,194 @@ class Heap_comparator{
     }
 };
 
-void calculate_srtf_times(vector<Process> &process_list){
-    int n = process_list.size();
-    int completed = 0;
-    int time = process_list[0].arrival_time;
-    priority_queue<pair<int,int>, vector<pair<int,int>>, Heap_comparator> process_heap;
-    int i = 0;
+class SRTF_Scheduling{
+    private:
+    static bool Sort_comparator(Process &p1, Process &p2){
+        return p1.arrival_time < p2.arrival_time;
+    };
 
-    cout<<endl<<time<<" {";
-
-    while(completed != n){
-
-        while(i<n && process_list[i].arrival_time <= time){
-            process_heap.push({i, process_list[i].burst_time});
-            i++;
-        }
-
-        if(process_heap.empty()){
-            time = process_list[i].arrival_time;
-            cout<<"--} "<<time<<" {";
-            continue;
-        }
-
-        int next_arrival;
-        if(i<n)
-            next_arrival = process_list[i].arrival_time;
-        else
-            next_arrival = INT8_MAX;
-
-        int time_lap = next_arrival - time;
-
-        int index = process_heap.top().first;
-        int rt = process_heap.top().second;
-        process_heap.pop();
-
-        if(rt>time_lap){
-            rt -= time_lap;
-            process_heap.push({index,rt});
-            time += time_lap;
-        }
-        else{
-            completed++;
-            time += rt;
-            process_list[index].completion_time = time;
-            process_list[index].turn_around_time = time - process_list[index].arrival_time;
-            process_list[index].waiting_time = process_list[index].turn_around_time - process_list[index].burst_time;
-        }
-        cout<<process_list[index].process_id<<"} "<<time<<" {";
-    }
-    cout<<endl;
-};
-
-void srtf_with_gantt_chart(vector<Process> &process_list){
-    int n = process_list.size();
-    sort(process_list.begin(), process_list.end(), Sort_comparator);
-
-    calculate_srtf_times(process_list);
-};
-
-void print_srtf_table(vector<Process> &tasks_list){
-    int n = tasks_list.size();
-    cout<<endl<<"Process_id"<<"  "<<"Arrival_time"<<"  "<<"Burst_time"<<"  "
-        <<"Waiting_time"<<"  "<<"Turn_around_time"<<"  "
-        <<"Completion_time"<<endl;
-
-    for(int i=0; i<n; i++){
-        cout<<tasks_list[i].process_id<<setw(13)<<tasks_list[i].arrival_time<<setw(14)
-            <<tasks_list[i].burst_time<<setw(12)<<tasks_list[i].waiting_time<<setw(14)
-            <<tasks_list[i].turn_around_time<<setw(19)<<tasks_list[i].completion_time<<endl;
-    }
-    cout<<endl;
-};
-
-void print_utils(vector<Process> &process_list){
-    int n = process_list.size();
-    float avg_waiting_time = 0;
-    float avg_turn_around_time = 0;
+    public:
+    vector<Process> tasks_list;
+    vector<Gantt> chart;
+    float avg_waiting_time;
+    float avg_turn_around_time;
     float scheduling_length;
     float throughput;
 
-    for(int i = 0; i<n; i++){
-        avg_waiting_time += process_list[i].waiting_time;
-        avg_turn_around_time += process_list[i].turn_around_time;
+    SRTF_Scheduling(vector<Process> &process_list){
+        this->tasks_list = process_list;
+        avg_waiting_time = 0;
+        avg_turn_around_time = 0;
+        scheduling_length = 0;
+        throughput = 0;
     }
 
-    avg_waiting_time /= n;
-    avg_turn_around_time /= n;
-    scheduling_length = process_list[n-1].completion_time - process_list[0].arrival_time;
-    throughput = n/scheduling_length;
+    void schedule(){
+        int n = tasks_list.size();
+        sort(tasks_list.begin(), tasks_list.end(), Sort_comparator);
 
-    cout<<"Average waiting time = "<<avg_waiting_time<<endl;
-    cout<<"Average turn around time = "<<avg_turn_around_time<<endl;
-    cout<<"Scheduling Length = "<<scheduling_length<<endl;
-    cout<<"Throughput = "<<throughput<<endl;
-}
+        priority_queue<pair<int,int>, vector<pair<int,int>>, Heap_comparator> ready_queue;
+
+        int time = tasks_list[0].arrival_time;
+        if(time != 0){
+            chart.push_back(Gantt(0,"NA",time));
+        }
+        int nextPushIdx = 0;
+        int completed = 0;
+
+        while(completed != n){
+            while(nextPushIdx<n && tasks_list[nextPushIdx].arrival_time <= time){
+                ready_queue.push({nextPushIdx, tasks_list[nextPushIdx].burst_time});
+                nextPushIdx++;
+            }
+
+            if(ready_queue.empty()){
+                chart.push_back(Gantt(time,"NA",tasks_list[nextPushIdx].arrival_time));
+                time = tasks_list[nextPushIdx].arrival_time;
+                continue;
+            }
+
+            int next_arrival;
+            if(nextPushIdx < n)
+                next_arrival = tasks_list[nextPushIdx].arrival_time;
+            else
+                next_arrival = INT8_MAX;
+
+            int time_lap = next_arrival - time;
+
+            int index = ready_queue.top().first;
+            int remaining_time = ready_queue.top().second;
+            ready_queue.pop();
+
+            if(remaining_time > time_lap){
+                remaining_time -= time_lap;
+                ready_queue.push({index,remaining_time});
+                if(!chart.empty() && chart.back().pid == tasks_list[index].process_id){
+                    chart.back().end = time+time_lap;
+                }
+                else{
+                    chart.push_back(Gantt(time,tasks_list[index].process_id,time+time_lap));
+                }
+                time += time_lap;
+            }
+            else{
+                completed++;
+                if(!chart.empty() && chart.back().pid == tasks_list[index].process_id){
+                    chart.back().end = time+remaining_time;
+                }
+                else{
+                    chart.push_back(Gantt(time,tasks_list[index].process_id,time+remaining_time));
+                }
+                time += remaining_time;
+                tasks_list[index].completion_time = time;
+                tasks_list[index].turn_around_time = time - tasks_list[index].arrival_time;
+                tasks_list[index].waiting_time = tasks_list[index].turn_around_time - tasks_list[index].burst_time;
+            }
+        }
+    }
+
+    void calculate_metrics(){
+        int n = tasks_list.size();
+        int max_comp_time = 0;
+        for(int i=0; i<n; i++){
+            avg_waiting_time += tasks_list[i].waiting_time;
+            avg_turn_around_time += tasks_list[i].turn_around_time;
+            max_comp_time = max(max_comp_time,tasks_list[i].completion_time);
+        }
+
+        avg_turn_around_time /= n;
+        avg_waiting_time /= n;
+        scheduling_length = max_comp_time - tasks_list[0].arrival_time;
+        throughput = n/scheduling_length;
+    }
+
+    void print_matrices(){
+        cout<<"Average waiting time = "<<avg_waiting_time<<endl;
+        cout<<"Average turn around time = "<<avg_turn_around_time<<endl;
+        cout<<"Scheduling Length = "<<scheduling_length<<endl;
+        cout<<"Throughput = "<<throughput<<endl;
+        cout<<endl;
+    }
+
+    void print_table(){
+        int n = tasks_list.size();
+        cout<<endl<<' ';
+        fill('-',86);
+        cout<<endl;
+
+        cout<<left;
+        cout << "|";
+        cout<< setw(11) << "Process_id" << "|"
+            << setw(13) << "Arrival_time" << "|"
+            << setw(11) << "Burst_time" << "|"
+            << setw(13) << "Waiting_time"  << "|"
+            << setw(17) << "Turn_around_time" << "|"
+            << setw(16) << "Completion_time" << "|" <<endl;
+
+        for(int i=0; i<n; i++){
+            cout << "|";
+            cout<< setw(11) << tasks_list[i].process_id << "|"
+                << setw(13) << tasks_list[i].arrival_time << "|" 
+                << setw(11) << tasks_list[i].burst_time << "|"
+                << setw(13) << tasks_list[i].waiting_time << "|"
+                << setw(17) << tasks_list[i].turn_around_time << "|"
+                << setw(16) << tasks_list[i].completion_time  << "|" <<endl;
+        }
+
+        cout<<' ';
+        fill('-',86);
+        cout<<endl;
+    }
+
+    void print_gantt_chart(){
+        int n = chart.size();
+
+        cout<<' ';
+        for(int i=0; i<n; i++){
+            int t = chart[i].end - chart[i].start;
+            fill('-',4*t);
+            cout<<' ';
+        };
+
+        cout<<endl;
+
+        cout<<'|';
+        for(int i=0; i<n; i++){
+            int t = chart[i].end - chart[i].start;
+            fill(' ',(4*t-2)/2);
+            
+            cout<<chart[i].pid;
+            
+            fill(' ',(4*t-2)/2);
+
+            cout<<'|';
+        }
+
+        cout<<endl;
+
+        cout<<0;
+        for(int i=0; i<n; i++){
+            int t = chart[i].end - chart[i].start;
+
+            if(chart[i].start>99)
+                fill('-',4*t-2);
+            else if(chart[i].start>9)
+                fill('-',4*t-1);
+            else
+                fill('-',4*t);
+
+            cout<<chart[i].end;
+        };
+
+        cout<<endl;
+    }
+
+    void fill(char c, int freq){
+        for(int i=0; i<freq; i++){
+            cout<<c;
+        }
+    }
+};
 
 int main(){
     
@@ -143,9 +242,7 @@ int main(){
     for(int i=1; i<=n; i++){
         cout<<"PROCESS "<<i<<endl;
 
-        string pid;
-        cout<<"Enter process id : ";
-        cin>>pid;
+        string pid = 'P' + to_string(i);
         
         int at;
         cout<<"Enter arrival time : ";
@@ -155,13 +252,17 @@ int main(){
         cout<<"Enter burst time : ";
         cin>>bt;
 
-        Process p(pid, at, bt);
-        process_list.push_back(p);
+        process_list.push_back(Process(pid, at, bt));
     }
 
-    srtf_with_gantt_chart(process_list);
-    print_srtf_table(process_list);
-    print_utils(process_list);
+    SRTF_Scheduling srtf_scheduler(process_list);
+
+    srtf_scheduler.schedule();
+    srtf_scheduler.calculate_metrics();
+
+    srtf_scheduler.print_table();
+    srtf_scheduler.print_matrices();
+    srtf_scheduler.print_gantt_chart();
 
     return 0;
 }
