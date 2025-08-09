@@ -4,9 +4,6 @@
 #include <iomanip>
 using namespace std;
 
-/*If arrival time of two or more processes  are same then that will execute which came first
-  i.e which you input first*/
-
 class Process{
     public:
     string process_id;
@@ -40,26 +37,34 @@ class Gantt{
     }
 };
 
-bool comparator(Process &p1, Process &p2){
-    return p1.arrival_time < p2.arrival_time;
-};
-
 class FCFS_Scheduling{
+    private:
+    static bool comparator(const Process &p1, const Process &p2){
+        return p1.arrival_time < p2.arrival_time;
+    };
+
     public:
     vector<Process> tasks_list;
     vector<Gantt> chart;
-    float avg_waiting_time = 0;
-    float avg_turn_around_time = 0;
-    float scheduling_length = 0;
-    float throughput = 0;
+    float avg_waiting_time;
+    float avg_turn_around_time;
+    float scheduling_length;
+    float throughput;
 
     FCFS_Scheduling(vector<Process> &t){
-        int n = t.size();
         this->tasks_list = t;
+        avg_waiting_time = 0;
+        avg_turn_around_time = 0;
+        scheduling_length = 0;
+        throughput = 0;
+    }
+
+    void schedule(){
+        int n = tasks_list.size();
         sort(tasks_list.begin(), tasks_list.end(), comparator);
         int time = tasks_list[0].arrival_time;
 
-        for (int i=0; i<n; i++){
+        for(int i=0; i<n; i++){
             tasks_list[i].waiting_time = time - tasks_list[i].arrival_time;
             if(tasks_list[i].waiting_time < 0)
                 tasks_list[i].waiting_time = 0;
@@ -67,10 +72,15 @@ class FCFS_Scheduling{
             tasks_list[i].turn_around_time = tasks_list[i].waiting_time + tasks_list[i].burst_time;
             tasks_list[i].completion_time = tasks_list[i].arrival_time + tasks_list[i].turn_around_time;
 
+            time = tasks_list[i].completion_time;
+        }
+    }
+
+    void calculate_metrics(){
+        int n = tasks_list.size();
+        for(int i=0; i<n; i++){
             avg_waiting_time += tasks_list[i].waiting_time;
             avg_turn_around_time += tasks_list[i].turn_around_time;
-
-            time = tasks_list[i].completion_time;
         }
 
         avg_turn_around_time /= n;
@@ -79,26 +89,41 @@ class FCFS_Scheduling{
         throughput = n/scheduling_length;
     }
 
-    void print_table(){
-        int n = tasks_list.size();
-        cout<<endl<<"Process_id"<<"  "<<"Arrival_time"<<"  "<<"Burst_time"<<"  "
-            <<"Waiting_time"<<"  "<<"Turn_around_time"<<"  "
-            <<"Completion_time"<<endl;
-
-        for(int i=0; i<n; i++){
-            cout<<tasks_list[i].process_id<<setw(13)<<tasks_list[i].arrival_time<<setw(14)
-                <<tasks_list[i].burst_time<<setw(12)<<tasks_list[i].waiting_time<<setw(14)
-                <<tasks_list[i].turn_around_time<<setw(19)<<tasks_list[i].completion_time<<endl;
-        }
-
-        cout<<endl;
-    }
-
-    void print_utils(){
+    void print_matrices(){
         cout<<"Average waiting time = "<<avg_waiting_time<<endl;
         cout<<"Average turn around time = "<<avg_turn_around_time<<endl;
         cout<<"Scheduling Length = "<<scheduling_length<<endl;
         cout<<"Throughput = "<<throughput<<endl;
+        cout<<endl;
+    }
+
+    void print_table(){
+        int n = tasks_list.size();
+        cout<<endl<<' ';
+        fill('-',86);
+        cout<<endl;
+
+        cout<<left;
+        cout << "|";
+        cout<< setw(11) << "Process_id" << "|"
+            << setw(13) << "Arrival_time" << "|"
+            << setw(11) << "Burst_time" << "|"
+            << setw(13) << "Waiting_time"  << "|"
+            << setw(17) << "Turn_around_time" << "|"
+            << setw(16) << "Completion_time" << "|" <<endl;
+
+        for(int i=0; i<n; i++){
+            cout << "|";
+            cout<< setw(11) << tasks_list[i].process_id << "|"
+                << setw(13) << tasks_list[i].arrival_time << "|" 
+                << setw(11) << tasks_list[i].burst_time << "|"
+                << setw(13) << tasks_list[i].waiting_time << "|"
+                << setw(17) << tasks_list[i].turn_around_time << "|"
+                << setw(16) << tasks_list[i].completion_time  << "|" <<endl;
+        }
+
+        cout<<' ';
+        fill('-',86);
         cout<<endl;
     }
 
@@ -177,14 +202,12 @@ int main(){
     cout<<"Enter number of processes : ";
     cin>>n;
 
-    vector<Process> t(n);
+    vector<Process> process_list;
 
     for(int i=1; i<=n; i++){
         cout<<"PROCESS "<<i<<endl;
 
-        string pid;
-        cout<<"Enter process id : ";
-        cin>>pid;
+        string pid = 'P' + to_string(i);
         
         int at;
         cout<<"Enter arrival time : ";
@@ -194,15 +217,17 @@ int main(){
         cout<<"Enter burst time : ";
         cin>>bt;
 
-        t[i-1] = Process(pid, at, bt);
+        process_list.push_back(Process(pid, at, bt));
     }
 
-    FCFS_Scheduling fcfs1(t);
-    fcfs1.print_table();
+    FCFS_Scheduling fcfs_scheduler(process_list);
 
-    fcfs1.print_utils();
+    fcfs_scheduler.schedule();
+    fcfs_scheduler.calculate_metrics();
 
-    fcfs1.gantt_chart();
+    fcfs_scheduler.print_table();
+    fcfs_scheduler.print_matrices();
+    fcfs_scheduler.gantt_chart();
 
     return 0;
 }
