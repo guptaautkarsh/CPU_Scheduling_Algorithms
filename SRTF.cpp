@@ -37,14 +37,20 @@ class Gantt{
 
 class Heap_comparator{
     public:
-    bool operator()(pair<int,int> &p1, pair<int,int> &p2){  //<index,remaining time>
+    bool operator()(const pair<int,int> &p1, const pair<int,int> &p2){  //<index,remaining time>
+        if(p1.second == p2.second){
+            return p1.first > p2.first;
+        }
         return p1.second > p2.second;
     }
 };
 
 class SRTF_Scheduling{
     private:
-    static bool Sort_comparator(Process &p1, Process &p2){
+    static bool Sort_comparator(const Process &p1, const Process &p2){
+        if(p1.arrival_time == p2.arrival_time){
+            return p1.process_id < p2.process_id;
+        }
         return p1.arrival_time < p2.arrival_time;
     };
 
