@@ -36,6 +36,9 @@ class Gantt{
 class HRRN_Scheduling{
     private:
     static bool Sort_comparator(const Process &p1, const Process &p2){
+        if(p1.arrival_time == p2.arrival_time){
+            return p1.process_id < p2.process_id;
+        }
         return p1.arrival_time < p2.arrival_time;
     };
 
