@@ -13,10 +13,6 @@ class Process{
     int waiting_time;
     int turn_around_time;
     int completion_time;
-
-    Process(){
-        process_id = "NA";
-    }
     
     Process(string id, int at, int bt){
         this->process_id = id;
@@ -42,6 +38,9 @@ class Heap_comparator{
     public:
     bool operator()(const Process* p1, const Process* p2){
         if(p1->burst_time == p2->burst_time){
+            if(p1->arrival_time == p2->arrival_time){
+                return p1->process_id > p2->process_id;
+            }
             return p1->arrival_time > p2->arrival_time;
         }
         return p1->burst_time > p2->burst_time;
@@ -82,6 +81,7 @@ class SJF_Scheduling{
         }
         int nextPushIdx = 0;
         int completed = 0;
+        
         while(completed != n){
             while(nextPushIdx<n && tasks_list[nextPushIdx].arrival_time <= time){
                 ready_queue.push(&tasks_list[nextPushIdx]);
