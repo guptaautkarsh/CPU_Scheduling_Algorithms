@@ -1,8 +1,15 @@
 # CPU Scheduling Algorithms
 
-This repository contains C++ implementations of various CPU scheduling algorithms, demonstrating how processes are selected for execution based on different strategies.  
-It includes **FCFS, SJF, Priority Scheduling, HRRN, and Round Robin**.  
-Each implementation also considers **tie-breaking criteria** when two or more processes have the same selection factor.
+This repository contains C++ implementations of various CPU scheduling algorithms, demonstrating how processes are selected for execution based on different strategies. It includes **FCFS, SJF, Priority Scheduling, HRRN, and Round Robin**. Each implementation also considers **tie-breaking criteria** when two or more processes have the same selection factor.
+
+Each implementation not only schedules processes but also:  
+- Prints a **process table** showing arrival time, burst time, waiting time, turnaround time, and completion time  
+- Displays a **Gantt chart** for visualizing process execution order  
+- Computes and displays performance metrics such as:  
+  - **Average Waiting Time (AWT)**  
+  - **Average Turnaround Time (ATAT)**  
+  - **Scheduling Length (SL)**  
+  - **Throughput**  
 
 ---
 
@@ -35,9 +42,7 @@ Each implementation also considers **tie-breaking criteria** when two or more pr
 
 ### 4. Highest Response Ratio Next (HRRN)
 - **Description:** Chooses the process with the highest response ratio:  
-  \[
-  \text{Response Ratio} = \frac{\text{Waiting Time} + \text{Burst Time}}{\text{Burst Time}}
-  \]
+  **Response Ratio = (Waiting Time + Burst Time) / Burst Time**  
   This balances short jobs and long waiting processes.  
 - **Selection Factor:** Highest Response Ratio.  
 - **Tie-Breaker Order:**  
