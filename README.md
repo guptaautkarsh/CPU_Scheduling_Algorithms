@@ -2,7 +2,7 @@
 
 This repository contains C++ implementations of various CPU scheduling algorithms, demonstrating how processes are selected for execution based on different strategies. It includes **FCFS, SJF, Priority Scheduling, HRRN, and Round Robin**. Each implementation also considers **tie-breaking criteria** when two or more processes have the same selection factor.
 
-Each implementation not only schedules processes but also:  
+Each implementation:  
 - Prints a **process table** showing arrival time, burst time, waiting time, turnaround time, and completion time  
 - Displays a **Gantt chart** for visualizing process execution order  
 - Computes and displays performance metrics such as:  
@@ -22,7 +22,7 @@ Each implementation not only schedules processes but also:
 
 ---
 
-### 2. Shortest Job First (SJF) — Non-Preemptive
+### 2. Shortest Job First (SJF) 
 - **Description:** Process with the shortest burst time is executed first.  
 - **Selection Factor:** Burst time.  
 - **Tie-Breaker Order:**  
@@ -31,7 +31,7 @@ Each implementation not only schedules processes but also:
 
 ---
 
-### 3. Priority Scheduling — Non-Preemptive
+### 3. Priority Scheduling 
 - **Description:** Process with the highest priority is executed first. (Lower priority value = higher priority)  
 - **Selection Factor:** Priority value.  
 - **Tie-Breaker Order:**  
